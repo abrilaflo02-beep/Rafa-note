@@ -47,29 +47,34 @@
   }
 
   /* ===== ESTADO ABIERTO (se activa con .open en <body>) ===== */
-  body.open .letter-full{ z-index:5; opacity:1; transition:opacity .45s ease 1.0s, z-index 0s }
+  /* Animación mejorada: agitación más amplia y lenta */
   body.open .envelope{
-    animation:shake .42s ease both, blast .6s cubic-bezier(.2,.7,.2,1) .44s both;
-    pointer-events:none; /* evitar 2º click durante animación */
-  }
+   animation:
+     shake 1.2s ease-in-out both,
+     blast .8s cubic-bezier(.25,.7,.2,1) 1.25s both;
+   pointer-events:none;
+}
 
-  @keyframes shake{
-    0%{transform:translate(0) rotate(0)}
-    10%{transform:translate(-2px) rotate(-2deg)}
-    20%{transform:translate(3px) rotate(2deg)}
-    30%{transform:translate(-3px) rotate(-3deg)}
-    40%{transform:translate(3px) rotate(3deg)}
-    55%{transform:translate(-2px) rotate(-2deg)}
-    70%{transform:translate(2px) rotate(2deg)}
-    85%{transform:translate(-1px) rotate(-1deg)}
-    100%{transform:translate(0) rotate(0)}
-  }
-  @keyframes blast{
-    0%   { opacity:1; transform:scale(1) rotateX(0) }
-    35%  { transform:scale(1.07) rotateX(8deg) }
-    65%  { transform:scale(1.15) rotateX(12deg); filter:blur(1px) }
-    100% { opacity:0; transform:scale(1.22) rotateX(18deg); filter:blur(6px) }
-  }
+/* Temblor suave y amplio */
+@keyframes shake {
+  0%   { transform:translate(0,0) rotate(0deg); }
+  5%   { transform:translate(-6px, 2px) rotate(-5deg); }
+  15%  { transform:translate(6px, -3px) rotate(4deg); }
+  25%  { transform:translate(-8px, 3px) rotate(-6deg); }
+  35%  { transform:translate(8px, -4px) rotate(5deg); }
+  50%  { transform:translate(-6px, 2px) rotate(-4deg); }
+  65%  { transform:translate(5px, -2px) rotate(3deg); }
+  80%  { transform:translate(-4px, 1px) rotate(-2deg); }
+  100% { transform:translate(0,0) rotate(0deg); }
+}
+
+/* Estallido más suave y cinematográfico */
+@keyframes blast {
+  0%   { opacity:1; transform:scale(1) rotateX(0deg) }
+  30%  { transform:scale(1.1) rotateX(10deg) }
+  60%  { transform:scale(1.25) rotateX(16deg) filter:blur(2px) }
+  100% { opacity:0; transform:scale(1.35) rotateX(22deg) filter:blur(8px) }
+}
 
   /* Respeta accesibilidad: si el usuario pide menos movimiento */
   @media (prefers-reduced-motion: reduce){
