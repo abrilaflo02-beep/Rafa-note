@@ -8,30 +8,30 @@
 <meta property="og:title" content="💌 Toca para abrir tu carta">
 <meta property="og:description" content="Abre el sobre, de: Abril">
 <meta property="og:image" content="envelope.jpg">
-<meta property="og:type" content="website">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
 <style>
   :root{
-    --bg:#fff4f6;      /* cámbialo por #f7e8d0 si quieres beige */
+    --bg:#fff4f6;        /* beige: #f7e8d0 */
     --ink:#111;
     --shadow:rgba(0,0,0,.18);
     --radius:18px;
-    --speed:.85s;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
 
   .wrap{min-height:100dvh;display:flex;justify-content:center}
-  .card{width:min(640px,94vw);text-align:center;padding:18px 12px}
+  .card{width:min(640px,94vw);text-align:center;padding:16px 10px}
   h1{margin:.2rem 0 1rem;font-size:clamp(22px,4.5vw,34px)}
 
-  .stage{position:relative;margin:0 auto;width:100%;max-width:640px;aspect-ratio:16/10;
-    perspective:1000px}
-  /* Ocultamos checkbox */
+  /* Ocultamos el checkbox */
   #toggle{display:none}
 
-  /* SOBRE (label es el botón) */
+  /* Escenario: solo el sobre (botón) */
+  .stage{position:relative;margin:0 auto;width:100%;max-width:640px;aspect-ratio:16/10}
   label.envelope{
     position:absolute;inset:0;display:block;cursor:pointer;z-index:3;border-radius:var(--radius);
     overflow:hidden;background:#fff;box-shadow:0 14px 36px var(--shadow);
@@ -39,49 +39,40 @@
   }
   .envelope img{width:100%;height:100%;object-fit:contain;display:block;background:#fff}
 
-  /* CARTA (pantalla completa tras la “explosión”) */
+  /* Overlay de carta a pantalla completa */
   .letter-full{
     position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    padding:14px;z-index:-1;opacity:0; /* aparece tras la animación */
-    background:var(--bg); /* sin overlay oscuro para mantener tono suave */
-    transition:opacity .45s ease .95s, z-index 0s linear 1.0s; /* z-index sube cuando ya es visible */
+    padding:14px;z-index:-1;opacity:0;background:var(--bg);
+    transition:opacity .45s ease 1.0s, z-index 0s linear 1.0s;
   }
   .letter-full img{
-    max-width:min(92vw,720px);
-    max-height:92vh;      /* se ve completa; hace scroll si es más larga */
+    max-width:min(92vw,760px);
+    max-height:92vh;
     width:auto;height:auto;object-fit:contain;display:block;background:#fff;border-radius:16px;
     box-shadow:0 18px 40px var(--shadow);
   }
-  /* Al abrir: levantamos z-index y hacemos visible */
-  #toggle:checked ~ .letter-full{
-    z-index:5; opacity:1; transition:opacity .45s ease .95s, z-index 0s; /* sin delay al subir z */
-  }
+  /* Al abrir, mostramos la carta */
+  #toggle:checked ~ .letter-full{ z-index:5; opacity:1; transition:opacity .45s ease 1.0s, z-index 0s }
 
-  /* Animación Balatro-like: shake -> blast (secuencia) */
+  /* Animación Balatro-like: shake -> blast */
   #toggle:checked ~ .stage label.envelope{
-    animation:
-      shake .42s ease both,
-      blast .58s cubic-bezier(.2,.7,.2,1) .44s both; /* empieza tras el shake */
+    animation:shake .42s ease both, blast .6s cubic-bezier(.2,.7,.2,1) .44s both;
   }
-  /* Durante/tras “explosión”, retiramos el sobre del flujo */
-  #toggle:checked ~ .stage{pointer-events:none}
-
   @keyframes shake{
-    0% { transform:translate3d(0,0,0) rotate(0deg) }
-    10%{ transform:translate3d(-2px,0,0) rotate(-2deg) }
-    20%{ transform:translate3d(3px,0,0) rotate(2deg) }
-    30%{ transform:translate3d(-3px,0,0) rotate(-3deg) }
-    40%{ transform:translate3d(3px,0,0) rotate(3deg) }
-    50%{ transform:translate3d(-2px,0,0) rotate(-2deg) }
-    60%{ transform:translate3d(2px,0,0) rotate(2deg) }
-    70%{ transform:translate3d(-1px,0,0) rotate(-1deg) }
-    80%{ transform:translate3d(1px,0,0) rotate(1deg) }
-    100%{ transform:translate3d(0,0,0) rotate(0deg) }
+    0%{transform:translate(0) rotate(0)}
+    10%{transform:translate(-2px) rotate(-2deg)}
+    20%{transform:translate(3px) rotate(2deg)}
+    30%{transform:translate(-3px) rotate(-3deg)}
+    40%{transform:translate(3px) rotate(3deg)}
+    55%{transform:translate(-2px) rotate(-2deg)}
+    70%{transform:translate(2px) rotate(2deg)}
+    85%{transform:translate(-1px) rotate(-1deg)}
+    100%{transform:translate(0) rotate(0)}
   }
   @keyframes blast{
-    0%   { opacity:1; transform:scale(1) rotateX(0deg) }
-    30%  { transform:scale(1.06) rotateX(8deg) }
-    60%  { transform:scale(1.14) rotateX(12deg); filter:blur(1px) }
+    0%   { opacity:1; transform:scale(1) rotateX(0) }
+    35%  { transform:scale(1.07) rotateX(8deg) }
+    65%  { transform:scale(1.15) rotateX(12deg); filter:blur(1px) }
     100% { opacity:0; transform:scale(1.22) rotateX(18deg); filter:blur(6px) }
   }
 </style>
@@ -109,18 +100,13 @@
   </div>
 
 <script>
-  // Opcional: ?cover=...&img=...&auto=1
+  // Opcional: ?cover=...&img=...&auto=1  (y cualquier ?v=2 para forzar refresco)
   const qp = new URLSearchParams(location.search);
   const cover = qp.get('cover');
   const img   = qp.get('img');
   if (cover) document.getElementById('imgEnvelope').src = cover;
-  if (img){
-    document.getElementById('imgCarta').src = img;
-    document.getElementById('openImg').href = img;
-  }
-  if (qp.get('auto') === '1'){
-    setTimeout(()=>{ document.getElementById('toggle').checked = true; }, 180);
-  }
+  if (img){ document.getElementById('imgCarta').src = img; document.getElementById('openImg').href = img; }
+  if (qp.get('auto') === '1'){ setTimeout(()=>{ document.getElementById('toggle').checked = true; }, 180); }
 </script>
 </body>
 </html>
