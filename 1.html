@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tu carta 💌</title>
+
+<!-- Vista previa bonita en WhatsApp (opcional: cambia la URL de imagen) -->
+<meta property="og:title" content="💌 Toca para abrir tu carta">
+<meta property="og:description" content="Abre el sobre y guarda la carta en tu galería.">
+<meta property="og:image" content="envelope.jpg">
+<meta property="og:type" content="website">
+
+<style>
+  :root{
+    --bg:#fff4f6;
+    --ink:#111;
+    --muted:#666;
+    --shadow:rgba(0,0,0,.18);
+    --radius:16px;
+    --speed:.85s;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{width:min(560px,94vw);text-align:center}
+  h1{margin:.2rem 0 0.5rem}
+  .hint{color:var(--muted);margin:0 0 1rem}
+  .stage{
+    position:relative;margin:0 auto 10px;width:100%;
+    aspect-ratio: 16 / 10; /* base visual, se adapta al alto */
+    max-height:70vh;
+    perspective:1000px;
+  }
+  .pane{
+    position:absolute;inset:0;border-radius:var(--radius);overflow:hidden;
+    box-shadow:0 12px 36px var(--shadow);
+    background:#fff;
+  }
+  /* Sobre (portada) */
+  .envelope{
+    position:absolute;inset:0;display:grid;place-items:center;
+    transform-origin:50% 30%;
+    transition:transform var(--speed) cubic-bezier(.2,.7,.2,1), opacity var(--speed);
+    will-change:transform,opacity;
+    z-index:3;
+    background:#fff;
+  }
+  .envelope img{
+    width:100%;height:100%;object-fit:cover;display:block;
+  }
+
+  /* Carta (contenido) */
+  .letter{
+    position:absolute;left:6%;right:6%;top:10%;bottom:10%;
+    border-radius:12px;overflow:hidden;background:#fff;
+    display:grid;place-items:center;
+    transform:translateY(18%) scale(.98);
+    opacity:.0;
+    transition:transform var(--speed) .05s cubic-bezier(.2,.7,.2,1), opacity var(--speed) .05s;
+    z-index:2;
+  }
+  .letter img{
+    max-width:100%;max-height:100%;object-fit:contain;display:block;
+  }
+
+  /* Botón */
+  .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+  .btn{
+    padding:12px 16px;border-radius:12px;border:1px solid #ccc;background:#fff;
+    font-weight:600;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px;cursor:pointer
+  }
+  .btn:active{transform:translateY(1px)}
+
+  /* Toggle oculto */
+  #open{display:none}
+  label.open-btn{
+    display:inline-block;margin:.2rem auto .8rem;padding:12px 18px;border-radius:999px;
+    background:#111;color:#fff;font-weight:700;cursor:pointer;user-select:none
+  }
+
+  /* Estado abierto: el sobre "se levanta" y la carta sube */
+  #open:checked ~ .stage .envelope{
+    transform:rotateX(-60deg) translateY(-6%) scale(.98);
+    opacity:.15;
+  }
+  #open:checked ~ .stage .letter{
+    transform:translateY(-6%) scale(1);
+    opacity:1;
+  }
+
+  .cap{color:var(--muted);font-size:.9rem;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>💌 Toca para abrir tu carta</h1>
+    <p class="hint">Se anima el sobre y luego puedes guardar la carta en tu galería.</p>
+
+    <!-- Botón de abrir/cerrar -->
+    <input id="open" type="checkbox">
+    <label class="open-btn" for="open">📬 Abrir / cerrar sobre</label>
+
+    <!-- Escenario -->
+    <div class="stage">
+      <!-- Portada: SOLO reemplaza envelope.jpg -->
+      <div class="pane envelope">
+        <img id="imgEnvelope" src="envelope.jpg" alt="Sobre">
+      </div>
+
+      <!-- Carta: SOLO reemplaza carta.jpg -->
+      <div class="pane letter">
+        <img id="imgCarta" src="carta.jpg" alt="Carta">
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="actions">
+      <a id="dl" class="btn" download="carta.jpg" href="carta.jpg">📥 Guardar imagen</a>
+      <a class="btn" id="view" target="_blank" rel="noopener" href="carta.jpg">🖼️ Ver solo la carta</a>
+    </div>
+    <div class="cap">Si no se guarda directo en iPhone, toca “Ver solo la carta” y mantén presionado → “Guardar imagen”.</div>
+  </div>
+</div>
+
+<script>
+  // Soporte opcional de parámetros (?cover=...&img=...) por si quieres personalizar desde el link de WhatsApp
+  const qp = new URLSearchParams(location.search);
+  const cover = qp.get('cover'); // URL de sobre
+  const img = qp.get('img');     // URL de carta
+
+  if (cover) document.getElementById('imgEnvelope').src = cover;
+  if (img) {
+    const carta = document.getElementById('imgCarta');
+    const dl = document.getElementById('dl');
+    const view = document.getElementById('view');
+    carta.src = img;
+    dl.href = img;
+    view.href = img;
+  }
+
+  // Abre automáticamente el “sobre” al cargar si añades ?auto=1
+  if (qp.get('auto') === '1') {
+    const chk = document.getElementById('open');
+    // Espera un instante para que se vea la transición al entrar
+    setTimeout(() => { chk.checked = true; }, 180);
+  }
+</script>
+</body>
+</html>
